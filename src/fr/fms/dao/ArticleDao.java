@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import fr.fms.entities.Article;
 
-public class ArticleDao implements Dao<Article> {
+public class ArticleDao extends Dao<Article> {
 
 	private ArrayList<Article> articles;
 

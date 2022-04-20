@@ -1,5 +1,6 @@
 package fr.fms.dao;
 
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,11 +9,12 @@ import java.util.ArrayList;
 
 import fr.fms.entities.User;
 
-public class UserDao implements Dao<User> {
+public class UserDao extends Dao<User> {
 
 	private ArrayList<User> users;
 	
 	public UserDao() {
+		
 		users=new ArrayList<User>();
 	}
 	

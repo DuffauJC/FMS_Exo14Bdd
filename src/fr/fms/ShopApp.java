@@ -2,21 +2,24 @@ package fr.fms;
 
 import java.sql.SQLException;
 
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import fr.fms.business.IShopBusinessImpl;
-import fr.fms.dao.ArticleDao;
-
-import fr.fms.dao.UserDao;
+import fr.fms.dao.DAOFactory;
+import fr.fms.dao.Dao;
 import fr.fms.entities.Article;
 import fr.fms.entities.User;
 
 
 public class ShopApp {
 
-	private static ArticleDao article;	
-	private static UserDao user;
+	//private static ArticleDao article;
+	//private static UserDao user;
+	
+	private static Dao<Article> article;
+	private static Dao<User> user;
 	private static ArrayList<User> users;
 	private static IShopBusinessImpl shopJob;	
 
@@ -82,9 +85,12 @@ public class ShopApp {
 	 * @throws SQLException 
 	 */
 	private static void shopInit() throws SQLException {
-		// TODO Auto-generated method stub
-		article = new ArticleDao();
-		user=new UserDao();
+		
+		 article=DAOFactory.getArticleDao();
+		user=DAOFactory.getUserDao();
+		
+		//article = new ArticleDao();
+		//user=new UserDao();
 		shopJob = new IShopBusinessImpl();
 		users=user.readAll();
 
