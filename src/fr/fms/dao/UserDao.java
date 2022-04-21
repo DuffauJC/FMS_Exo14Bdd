@@ -2,14 +2,16 @@ package fr.fms.dao;
 
 
 import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+
 import fr.fms.entities.User;
 
-public class UserDao extends Dao<User> {
+public class UserDao implements Dao<User> {
 
 	private ArrayList<User> users;
 	
@@ -19,7 +21,7 @@ public class UserDao extends Dao<User> {
 	}
 	
 	@Override
-	public void create(User obj) throws SQLException {
+	public void create(User obj) {
 		String strSql="INSERT INTO T_Users(Login, Password) VALUES(?, ?);";	// une fois connecté, réalisation d'un requête
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
 			ps.setString(1, obj.getLogin());
@@ -30,14 +32,13 @@ public class UserDao extends Dao<User> {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("Erreur de création");
+			System.out.println("creation : Erreur ");
 		}
 		
 	}
 
 	@Override
-	public User read(int id) throws SQLException {
+	public User read(int id) {
 		User user = null;
 		String strSql="SELECT * FROM t_users WHERE IdUser = ?;";		// une fois connecté, réalisation d'un requête
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
@@ -53,15 +54,14 @@ public class UserDao extends Dao<User> {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("Erreur de lecture.");
+			System.out.println("Lecture avec id : Erreur");
 		}
 
 		return user;
 	}
 
 	@Override
-	public boolean update(User obj) throws SQLException {
+	public boolean update(User obj) {
 		String strSql="UPDATE t_users SET login = ?, password = ? WHERE IdUser = ? ;";						// une fois connecté, réalisation d'un requête
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
 			ps.setString(1, obj.getLogin());
@@ -75,14 +75,13 @@ public class UserDao extends Dao<User> {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("Erreur de mise à jour.");
+			System.out.println("Mise à jour : Erreur");
 		}
 		return false;
 	}
 
 	@Override
-	public boolean delete(int id) throws SQLException {
+	public boolean delete(int id)  {
 		String strSql="DELETE FROM t_users WHERE IdUser = ?;";	// une fois connecté, réalisation d'un requête
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
 			ps.setInt(1, id);
@@ -93,8 +92,7 @@ public class UserDao extends Dao<User> {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("Erreur de suppréssion.");
+			System.out.println("Suppression : Erreur");
 		}
 
 
@@ -102,7 +100,7 @@ public class UserDao extends Dao<User> {
 	}
 
 	@Override
-	public ArrayList<User> readAll() throws SQLException {
+	public ArrayList<User> readAll()  {
 		String strSql="SELECT * FROM T_users";						// une fois connecté, réalisation d'un requête
 		try(Statement statement =connection.createStatement()){
 			try(ResultSet resultSet=statement.executeQuery(strSql)){   // ResultSet de java.sql
@@ -116,11 +114,12 @@ public class UserDao extends Dao<User> {
 			}
 		}
 		catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("Erreur de lecture de la table.");
+			System.out.println("Lecture table : Erreur");
 		}
 
 		return users;
 	}
+
+
 
 }

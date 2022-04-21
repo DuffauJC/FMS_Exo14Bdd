@@ -7,20 +7,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import fr.fms.business.IShopBusinessImpl;
-import fr.fms.dao.DAOFactory;
-import fr.fms.dao.Dao;
+
 import fr.fms.entities.Article;
+import fr.fms.entities.Category;
 import fr.fms.entities.User;
 
 
 public class ShopApp {
 
-	//private static ArticleDao article;
-	//private static UserDao user;
-	
-	private static Dao<Article> article;
-	private static Dao<User> user;
-	private static ArrayList<User> users;
+
 	private static IShopBusinessImpl shopJob;	
 
 	/**
@@ -29,71 +24,31 @@ public class ShopApp {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) {
+		shopJob = new IShopBusinessImpl();
 
-		try {
-			shopInit();
-			welcome();
+		shopJob.shopInit();
+		welcome();
 
-			Scanner scan = new Scanner(System.in); 
+		Scanner scan = new Scanner(System.in); 
 
-			String login = "";
-			String password = "";
-			User userOk=null;
+		String login = "";
+		String password = "";
+		User userOk=null;
 
-			while (true) {
-				System.out.println("Tapez votre login et mot de passe pour accéder au menu.");
-				// Verfie si le compte existe.
-				userOk=	scanLogin(scan,login,password);
+		while (true) {
+			System.out.println("Tapez votre login et mot de passe pour accéder au menu.");
+			// Verfie si le compte existe.
+			userOk=	shopJob.login(scan,login,password);
 
-				if (userOk!=null) {
-					mainFunction(userOk,scan);
-				} else {
-					System.out.println("Client inexistant.");
-				}
-
+			if (userOk!=null) {
+				mainFunction(userOk,scan);
+			} else {
+				System.out.println("Client inexistant.");
 			}
 
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		}
 
 		////////////// Methodes ////////////
-	}
-	// lecture de la table articles
-	private static void listArticles() throws SQLException {
-
-		System.out.println("Liste des articles : ");
-		for(Article a : article.readAll())
-			System.out.println(a);
-
-	}
-
-	private static User scanLogin(Scanner scan, String login, String password) {
-		User user = null;
-		login=scan.next(); 
-		password=scan.next();
-		for (User u : users) {
-			if (u.getLogin().equals(login) && u.getPassword().equals(password)) {
-				user=new User(u.getIdUser(),u.getLogin(),u.getPassword());
-			}
-		}
-		return user;
-	}
-	/**
-	 * initialisation de la boutique
-	 * @throws SQLException 
-	 */
-	private static void shopInit() throws SQLException {
-		
-		 article=DAOFactory.getArticleDao();
-		user=DAOFactory.getUserDao();
-		
-		//article = new ArticleDao();
-		//user=new UserDao();
-		shopJob = new IShopBusinessImpl();
-		users=user.readAll();
-
 	}
 
 	/**
@@ -135,7 +90,10 @@ public class ShopApp {
 
 				switch(action) {
 				case 1 : // ajouter au panier
-					listArticles();
+					ArrayList<Article>art=	shopJob.getListArticles();
+					System.out.println("Liste des articles : ");
+					for(Article a : art)
+						System.out.println(a);
 					System.out.println("Tapez la référence à ajouter.");
 
 					while(!scan.hasNextInt()) {
@@ -146,7 +104,7 @@ public class ShopApp {
 					index =scan.nextInt();
 
 					// lecture d'un article en fonction de son identifiant
-					Article readArticle=article.read(index); 
+					Article readArticle=shopJob.getArticleById(index);
 					if (readArticle!=null) {
 						shopJob.addCaddy(readArticle);
 					} 
@@ -192,8 +150,8 @@ public class ShopApp {
 			System.out.println("Panier inexistant.");
 		} else {
 			System.out.println("Articles du panier : ");
-			shopJob.readAll().forEach((key,value)->{	
-				System.out.println("Ref : "+key+" "+value.getDescription()+" "+value.getBrand()+" "+value.getUnitaryPrice()+" $ "+" qty : "+value.getQty());
+			shopJob.readAll().forEach((value)->{	
+				System.out.println("Ref : "+value.getIdArticle()+" "+value.getDescription()+" "+value.getBrand()+" "+value.getUnitaryPrice()+" $ "+" qty : "+value.getQty());
 			});
 		}
 
@@ -225,14 +183,10 @@ public class ShopApp {
 					System.out.println("Pour modifier une quantité sasir ref.");
 					int	index=scan.nextInt();
 
-					// mise à jour d'un article que je récupère
-					Article modifArticle=shopJob.readCaddy(index);
-
-					// modification de la quantitée de l'article
 					System.out.println("Entrez la nouvelle quantité.");
 					int qty=scan.nextInt();
-					modifArticle.setQty(qty);
-					shopJob.updateCaddy(modifArticle);
+					
+					shopJob.updateCaddy(index,qty);
 					caddy();
 					break;
 

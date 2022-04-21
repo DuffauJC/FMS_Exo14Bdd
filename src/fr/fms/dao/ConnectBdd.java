@@ -28,16 +28,6 @@ public class ConnectBdd {
 		setPassword(password);
 		setConnection(connection);
 		
-
-		try {
-			
-			// enregistre la class auprès du driver manager
-			// (charge le pilote)
-			Class.forName(driver);
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} 
 	}
 
 
