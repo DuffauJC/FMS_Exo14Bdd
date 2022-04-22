@@ -11,6 +11,13 @@ public class Article {
 	private String catName;
 	private String descriptions;
 
+	/**
+	 * 
+	 * @param idArticle
+	 * @param description
+	 * @param brand
+	 * @param unitaryPrice
+	 */
 	public Article(int idArticle, String description, String brand, double unitaryPrice) {
 
 		setIdArticle(idArticle);
@@ -20,7 +27,12 @@ public class Article {
 		setQty(qty);
 
 	}
-
+	/**
+	 * 
+	 * @param description
+	 * @param brand
+	 * @param unitaryPrice
+	 */
 	public Article(String description, String brand, double unitaryPrice) {
 
 		setDescription(description);
@@ -28,7 +40,11 @@ public class Article {
 		setUnitaryPrice(unitaryPrice);
 
 	}
-
+	/**
+	 * 
+	 * @param description
+	 * @param brand
+	 */
 	public Article(String description, String brand) {
 
 		setDescription(description);
@@ -36,7 +52,14 @@ public class Article {
 
 
 	}
-
+	/**
+	 * 
+	 * @param idArticle
+	 * @param description
+	 * @param brand
+	 * @param unitaryPrice
+	 * @param catName
+	 */
 	public Article(int idArticle, String description, String brand, double
 			unitaryPrice, String catName) {
 		setIdArticle(idArticle); 

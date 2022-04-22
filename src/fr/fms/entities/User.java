@@ -5,14 +5,23 @@ public class User {
 	private int idUser;
 	private String login;
 	private String password;
-	
+	/**
+	 * 
+	 * @param idUser
+	 * @param login
+	 * @param password
+	 */
 	public User(int idUser, String login, String password) {
 		setIdUser(idUser);
 		setLogin(login);
 		setPassword(password);
 		
 	}
-	
+	/**
+	 * 
+	 * @param login
+	 * @param password
+	 */
 	public User( String login, String password) {
 		setLogin(login);
 		setPassword(password);

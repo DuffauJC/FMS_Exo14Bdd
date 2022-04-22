@@ -31,20 +31,18 @@ public class ConnectBdd {
 	}
 
 
-	// Static methode pour créer une instance de ConnectBdd
+	//  method to create an instance of ConnectBdd
 	public static ConnectBdd Connexion() 
 	{
-		// vérification de l'instance de connection
+		// connection instance check
 		if (connectBdd_instance == null) {
 			connectBdd_instance = new ConnectBdd();
-			//System.out.println(" connectBdd_instance : Création de la connexion.");
+			//System.out.println(" connectBdd_instance : Creation of the connection.");
 		}
 		return connectBdd_instance;
 	}
 
 
-	
-	// guetteurs et setteurs
 	public String getUrl() {
 		return url;
 	}
@@ -98,7 +96,6 @@ public class ConnectBdd {
 		try {
 			connection=DriverManager.getConnection(url,login,password);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 		this.connection = connection;
@@ -125,7 +122,7 @@ public class ConnectBdd {
 		try {
 			prop = config.readPropertiesFile("config.properties");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		this.prop = prop;

@@ -9,7 +9,12 @@ public class CreateConfigFile {
 
 
 	}
-	
+	/**
+	 * 
+	 * @param fileName
+	 * @return Properties
+	 * @throws IOException
+	 */
 	public Properties readPropertiesFile(String fileName) throws IOException {
 		FileInputStream fis = null;
 		Properties prop = null;

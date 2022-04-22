@@ -5,7 +5,6 @@ package fr.fms.business;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import fr.fms.dao.DAOFactory;
@@ -21,104 +20,149 @@ import fr.fms.entities.User;
 public class IShopBusinessImpl implements IShopBusiness {
 
 	private HashMap<Integer,Article> caddy;
-	private  ArrayList<Article> caddyToList= null;
-	private static Dao<Article> article;
-	private static Dao<User> user;
-	private static Dao<Category> category;
-	private static ArrayList<User> users;
+	private ArrayList<Article> caddyToList= null;
+
+	private static Dao<Article> articleDao;
+	private static Dao<User> userDao;
+	private static Dao<Category> categoryDao;
+
 
 	public IShopBusinessImpl() {
 		caddy = new HashMap<Integer,Article>();	
-
+		articleDao=DAOFactory.getArticleDao();
+		userDao=DAOFactory.getUserDao();
+		categoryDao=DAOFactory.getCategoryDao();
 	}
-
-	@Override
+	/**
+	 * add caddy
+	 * @param Article article
+	 * @Override
+	 */
 	public void addCaddy(Article article) {
-		caddy.put(article.getIdArticle(),article);		// ajouter un article au caddy, s'il existe déjà, ça ne marche pas	
+		caddy.put(article.getIdArticle(),article);
 
 	}
-
-	@Override
-	public Article readCaddy(int id) {
+	/**
+	 * read caddy by id
+	 * @return
+	 * @Override
+	 */
+	public Article readCaddy(int id)  {
 		Article art = null;
-		art=caddy.get(id);
+		if (caddy.get(id)!=null) {
+			art=caddy.get(id);
+		} else {
+			throw new RuntimeException("article inexistant dans le panier !");
+		}
+
 		return art;
 	}
-
-	@Override
+	/**
+	 * update caddy
+	 * @param id qty
+	 * @Override
+	 * @return
+	 */
 	public boolean updateCaddy(int id,int qty) {
-		caddy.get(id).setQty(qty);
-		return true;
+		if (caddy.get(id)!=null) {
+			caddy.get(id).setQty(qty);
+		} else {
+			throw new RuntimeException("article inexistant dans le panier !");
+		}
+		return true;	
 	}
 
-	@Override
-	public boolean deleteCaddy(int id) {
-		caddy.remove(id);
+	/**
+	 * delete item caddy by id
+	 * @return
+	 * @Override
+	 */
+	public boolean deleteCaddy(int id)  {
+		if (caddy.get(id)!=null) {
+			caddy.remove(id);
+		} else {
+			throw new RuntimeException("article inexistant dans le panier !");
+		}
+
 		return true;
 	}
-
-	@Override
+	/**
+	 * clear caddy
+	 * @Override
+	 */
 	public void order() {
 		// faire un new Command() plus tard.
 		caddy.clear();
 	}
 
-	@Override
+	/**
+	 * get caddy
+	 * @Override
+	 * @return
+	 */
 	public ArrayList<Article> readAll() {
 		caddyToList = caddy.values().stream().collect(Collectors.toCollection(ArrayList::new));     
 		return  caddyToList;
 	}
 
-	// get articles
+	/**
+	 * get users
+	 * @return
+	 */
+	public ArrayList<User> getListUsers() {
+		ArrayList<User> users = userDao.readAll();
+		return users;
+	}
+
+	/**
+	 * get articles
+	 * @return
+	 */
 	public ArrayList<Article> getListArticles() {
-		ArrayList<Article> art = article.readAll();
-		return art;
+		ArrayList<Article> articles = articleDao.readAll();
+		return articles;
 	}
 
-	// get category
+
+	/**
+	 * get categories
+	 * @return
+	 */
 	public ArrayList<Category> getListCategory() {
-		ArrayList<Category> cat = category.readAll();
-		return cat;
+		ArrayList<Category> categories = categoryDao.readAll();
+		return categories;
 	}
-	// get article id
-	public Article getArticleById(int id) {
+
+	/**
+	 * get article by id
+	 * @param id
+	 */
+	public void ArticleById(int id) {
 		Article art = null;
-		art=article.read(id); 
-		return art;
-	}
-	// get article par category
-	public  ArrayList<Article> getArticleReadByCategory(int id) {
-		ArrayList<Article> art = null;
-		art=article.readByCategory(id);
-		return art;
-	}
-
-	// initialisation de la boutique
-	public void shopInit() {
-
-		article=DAOFactory.getArticleDao();
-		user=DAOFactory.getUserDao();
-		category=DAOFactory.getCategoryDao();
-		users=user.readAll();
-		
-		ArrayList<Article> art=getArticleReadByCategory(3);
-		System.out.println("Liste des articles de la categorie 3 : ");
-		art.forEach(a->{
-			System.out.println(a.toString());
-		});
-		
-	}
-	// login user
-	public User login(Scanner scan, String login, String password) {
-
-		User user = null;
-		login=scan.next(); 
-		password=scan.next();
-		for (User u : users) {
-			if (u.getLogin().equals(login) && u.getPassword().equals(password)) {
-				user=new User(u.getIdUser(),u.getLogin(),u.getPassword());
-			}
+		art=articleDao.read(id); 
+		if (art!=null) {
+			addCaddy(art);
+		} else {
+			throw new RuntimeException("article inexistant dans la liste !");
 		}
-		return user;
+
 	}
+
+	/**
+	 * get article by category
+	 * @param id
+	 * @return
+	 */
+	public  ArrayList<Article> getArticleByCategory(int id) {
+		ArrayList<Article> articles = null;
+		if (categoryDao.read(id)!=null) {
+			articles=articleDao.readByCategory(id);
+
+		} else {
+			throw new RuntimeException("categorie inexistante dans la liste !");
+		}
+
+		return articles;
+	}
+
 }

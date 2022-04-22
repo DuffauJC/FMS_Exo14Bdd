@@ -16,14 +16,14 @@ public class UserDao implements Dao<User> {
 	private ArrayList<User> users;
 	
 	public UserDao() {
-		
 		users=new ArrayList<User>();
 	}
-	
+
+
 	@Override
 	public void create(User obj) {
-		String strSql="INSERT INTO T_Users(Login, Password) VALUES(?, ?);";	// une fois connecté, réalisation d'un requête
-		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
+		String strSql="INSERT INTO T_Users(Login, Password) VALUES(?, ?);";	
+		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setString(1, obj.getLogin());
 			ps.setString(2, obj.getPassword());
 			
@@ -40,12 +40,12 @@ public class UserDao implements Dao<User> {
 	@Override
 	public User read(int id) {
 		User user = null;
-		String strSql="SELECT * FROM t_users WHERE IdUser = ?;";		// une fois connecté, réalisation d'un requête
-		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
+		String strSql="SELECT * FROM t_users WHERE IdUser = ?;";		
+		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setInt(1, id);
-			ResultSet rs=ps.executeQuery();  // ResultSet de java.sql
+			ResultSet rs=ps.executeQuery();  
 			while (rs.next()) {
-				int rsidUser=rs.getInt(1);  // soit index(de 1 à n) de la colonne, soit le nom de la colonne
+				int rsidUser=rs.getInt(1);  
 				String rslogin =rs.getString(2);
 				String rspassword=rs.getString(3);
 
@@ -62,8 +62,8 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public boolean update(User obj) {
-		String strSql="UPDATE t_users SET login = ?, password = ? WHERE IdUser = ? ;";						// une fois connecté, réalisation d'un requête
-		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
+		String strSql="UPDATE t_users SET login = ?, password = ? WHERE IdUser = ? ;";						
+		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setString(1, obj.getLogin());
 			ps.setString(2, obj.getPassword());
 			ps.setDouble(3, obj.getIdUser());
@@ -82,8 +82,8 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public boolean delete(int id)  {
-		String strSql="DELETE FROM t_users WHERE IdUser = ?;";	// une fois connecté, réalisation d'un requête
-		try(PreparedStatement ps =connection.prepareStatement(strSql)){ // de java.sql
+		String strSql="DELETE FROM t_users WHERE IdUser = ?;";	
+		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setInt(1, id);
 
 			if (ps.executeUpdate()==1) {
@@ -101,11 +101,11 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public ArrayList<User> readAll()  {
-		String strSql="SELECT * FROM T_users";						// une fois connecté, réalisation d'un requête
+		String strSql="SELECT * FROM T_users";						
 		try(Statement statement =connection.createStatement()){
-			try(ResultSet resultSet=statement.executeQuery(strSql)){   // ResultSet de java.sql
+			try(ResultSet resultSet=statement.executeQuery(strSql)){  
 				while (resultSet.next()) {
-					int rsidUser=resultSet.getInt(1);  // soit index(de 1 à n) de la colonne, soit le nom de la colonne
+					int rsidUser=resultSet.getInt(1);  
 					String rslogin =resultSet.getString(2);
 					String rspassword=resultSet.getString(3);
 					
@@ -118,6 +118,12 @@ public class UserDao implements Dao<User> {
 		}
 
 		return users;
+	}
+
+	@Override
+	public ArrayList<User> readByCategory(int id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

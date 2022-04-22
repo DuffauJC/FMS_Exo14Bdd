@@ -4,6 +4,7 @@ import java.io.IOException;
 
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class BddConnection {
 	private static String driver;
 	private static Connection connection=null;
 
-	private static final BddConnection INSTANCE=new BddConnection();
+	private static final BddConnection INSTANCE=null;
 
 	// méthode qui crée la connexion
 	private  BddConnection() {
@@ -50,7 +51,7 @@ public class BddConnection {
 	}
 	
 	public static Connection getConnection() {
-		return INSTANCE.connection();
+		return BddConnection.connection;
 	}
 
 }

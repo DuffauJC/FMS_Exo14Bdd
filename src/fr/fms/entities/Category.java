@@ -5,14 +5,23 @@ public class Category {
 	private int idCategory;
 	private String catName;
 	private String description;
-	
+	/**
+	 * 
+	 * @param idCategory
+	 * @param catName
+	 * @param description
+	 */
 	public Category(int idCategory, String catName, String description) {
 		setIdCategory(idCategory);
 		setCatName(catName);
 		setDescription(description);
 		
 	}
-	
+	/**
+	 * 
+	 * @param catName
+	 * @param description
+	 */
 	public Category( String catName, String description) {
 		setCatName(catName);
 		setDescription(description);
@@ -48,14 +57,5 @@ public class Category {
 	public String toString() {
 		return "Category [idCategory=" + idCategory + ", catName=" + catName + ", description=" + description + "]";
 	}
-
-
-
-
-
-
-
-
-
 
 }
