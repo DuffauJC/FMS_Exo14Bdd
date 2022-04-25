@@ -12,6 +12,9 @@ public class ShopApp {
 
 
 	private static IShopBusinessImpl shopJob;	
+	private static String login = "";
+	private static String password = "";
+	private static User userOk=null;
 
 	/**
 	 * main
@@ -26,20 +29,9 @@ public class ShopApp {
 
 		Scanner scan = new Scanner(System.in); 
 
-		String login = "";
-		String password = "";
-		User userOk=null;
-
 		while (true) {
-			System.out.println("Type your login and password to access the menu");
-			// Check if the account exists.
-			userOk=	login(scan,login,password);
-
-			if (userOk!=null) {
-				mainFunction(userOk,scan);
-			} else {
-				System.out.println("Non-existent customer.");
-			}
+			showMenu();
+			mainFunction(scan);
 
 		}
 
@@ -60,41 +52,49 @@ public class ShopApp {
 	 */
 	public static  void showMenu() {
 
+		// list of article categories
+		ArrayList<Category>cat=	shopJob.getListCategory();
+	
+		System.out.println("List of catégories.\n");
+		System.out.println("-------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-15s | %-14s | %-65s |%n", "REF", "NOM", "DESCRIPTION");
+		System.out.println("|-----------------|----------------|-------------------------------------------------------------------|");
+
+		for (int i = 0; i < cat.size(); i++) {
+			System.out.printf("| %-15s | %-14s | %-65s |%n", cat.get(i).getIdCategory(), cat.get(i).getCatName(),
+					cat.get(i).getDescription());
+		}
+		System.out.println("-------------------------------------------------------------------------------------------------------");
+		cat.clear();
+		System.out.println("Welcome, what do you want to do ?");
+
 		System.out.print("1.Ajouter au panier - ");
 		System.out.print("2.Voir le panier - ");
 		System.out.print("3.Modifier panier - ");
 		System.out.print("4.Valider commande - ");
 		System.out.print("5.Sortir \n");
+		System.out.println("----------------------------");
 	}
 	/**
 	 * principal function
 	 * @param user
 	 * @param scan
 	 */
-	public static void mainFunction(User user, Scanner scan) {
+	public static void mainFunction(Scanner scan) {
 
 		int action=0;
 		int index;
 
-		System.out.println("Welcome "+user.getLogin()+", what do you want to do ?");
-
 		while(action != 5) {
 			try {
 
-				showMenu();
+				//showMenu();
 
 				action = scan.nextInt();
 
 				switch(action) {
 				case 1 : // add to caddy
 
-					// list of article categories
-					ArrayList<Category>cat=	shopJob.getListCategory();
-					System.out.println("List of catégories : ");
-					cat.forEach(c->{
-						System.out.println(c.toString());
-					});
-					cat.clear();
 					// category choose
 					System.out.println("Choose the category.");
 					while(!scan.hasNextInt()) {
@@ -102,13 +102,9 @@ public class ShopApp {
 						scan.next();
 					}
 					index =scan.nextInt();
+					
 					// list of articles of the chosen category
-					ArrayList<Article> art=shopJob.getArticleByCategory(index);
-					System.out.println("List of articles in the category "+index+" : ");
-					art.forEach(a->{
-						System.out.println(a.toString());
-					});
-					art.clear();
+					showChoosenCategory(index);
 					System.out.println("Type the reference to add.");
 
 					while(!scan.hasNextInt()) {
@@ -135,7 +131,15 @@ public class ShopApp {
 					break;
 
 				case 4 : // validate basket
-					displayCommand(scan);
+
+					System.out.println("Type your login and password to valid order"); 
+					//Check if the account exists. 
+					userOk= login(scan,login,password);
+
+					if (userOk!=null) { displayCommand(userOk,scan);
+					} else {
+						System.out.println("Non-existent customer."); 
+						}
 
 					break;
 
@@ -154,6 +158,26 @@ public class ShopApp {
 		}
 
 	}
+	private static void showChoosenCategory(int index) {
+		
+		ArrayList<Article> art=shopJob.getArticlesByCategory(index);
+		System.out.println("List of articles in the category "+index+" : ");
+	
+		System.out.println("----------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-5s| %-25s | %-38s | %-20s |%-3s |%n", "NO.", "DESCRIPTION", "MARQUE", " PRIX"," QTE");
+		System.out.println("|------|---------------------------|----------------------------------------|----------------------|-----|");
+
+		for (int i = 0; i < art.size(); i++) {
+			System.out.printf("| %-5s| %-25s | %-38s | %-20s | %-3s |%n",art.get(i).getIdArticle(), 
+					art.get(i).getDescription(),
+					art.get(i).getBrand(),art.get(i).getUnitaryPrice(),art.get(i).getQty());
+		}			
+
+		System.out.println("----------------------------------------------------------------------------------------------------------");
+		art.clear();
+		
+	}
+
 	/**
 	 * login user
 	 * @param scan
@@ -173,19 +197,46 @@ public class ShopApp {
 		}
 		return user;
 	}
+	
 	/**
 	 * show caddy
 	 */
 	private static void caddy() {
-		if (shopJob.readAll().isEmpty()) {
-			System.out.println("Panier inexistant.");
+		
+		ArrayList<Article> caddy=shopJob.readCaddy();
+	
+		if (caddy.isEmpty()) {
+			System.out.println("---------------------");
+			System.out.println("Votre panier est vide");
+			System.out.println("---------------------");
 		} else {
-			System.out.println("Articles du panier : ");
-			shopJob.readAll().forEach((value)->{	
-				System.out.println("Ref : "+value.getIdArticle()+" "+value.getDescription()+" "+value.getBrand()+" "+value.getUnitaryPrice()+" $ "+" qty : "+value.getQty());
-			});
-		}
+			System.out.println("Caddy\n");
+			System.out.println("--------------------------------------------------------------------------------------------");
+			System.out.printf("| %-5s| %-15s | %-8s | %-47s |%-3s |%n", "NO.", "DESCRIPTION", "MARQUE", " PRIX"," QTE");
+			System.out.println("|------|-----------------|----------|-------------------------------------------------|-----|");
 
+			for (int i = 0; i < caddy.size(); i++) {
+				System.out.printf("| %-5s| %-15s | %-8s | %-47s | %-3s |%n",caddy.get(i).getIdArticle(), 
+						caddy.get(i).getDescription(),
+						caddy.get(i).getBrand(),caddy.get(i).getUnitaryPrice(),caddy.get(i).getQty());
+			}			
+
+			System.out.println("---------------------------------------------------------------------------------------------");
+			// calcul du montant de la commande
+			double total=0;
+			for (int i = 0; i < caddy.size(); i++) {
+				double prix =caddy.get(i).getUnitaryPrice();
+				double qty =caddy.get(i).getQty();
+
+				double subTotal=prix*qty;
+				total+=subTotal;
+			}
+			// affichage du total de la commande
+			System.out.printf("| %81s | %-2s |%n"," TOTAL COMMANDE",total);
+			System.out.println("---------------------------------------------------------------------------------------------");		
+
+		}
+		
 	}
 	/**
 	 * Method that modifies the basket
@@ -195,7 +246,7 @@ public class ShopApp {
 
 		caddy();
 		// caddy not empty, show menu
-		if (!shopJob.readAll().isEmpty()) {
+		if (!shopJob.readCaddy().isEmpty()) {
 
 			int rep=1;
 
@@ -241,16 +292,17 @@ public class ShopApp {
 		}
 
 	}
-/**
- * Method that validates the command
- * @param scan
- */
-	public static void displayCommand(Scanner scan) {
+	/**
+	 * Method that validates the command
+	 * @param userOk 
+	 * @param scan
+	 */
+	public static void displayCommand(User userOk, Scanner scan) {
 
-		if (shopJob.readAll().isEmpty()) {
-			System.out.println("-----------------------------");
-			System.out.println("	You have no order.");
-			System.out.println("-----------------------------");
+		if (shopJob.readCaddy().isEmpty()) {
+			System.out.println("---------------------------------------");
+			System.out.println("	You have no order "+userOk.getLogin());
+			System.out.println("---------------------------------------");
 		} else {
 			caddy();
 			// if order we can validate
@@ -259,7 +311,7 @@ public class ShopApp {
 
 			if (rep.equals("Y")) {
 				shopJob.order();
-				System.out.println("Order validated.");
+				System.out.println("Order validated "+userOk.getLogin());
 			} else {
 				System.out.println("Cart still valid");
 

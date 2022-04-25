@@ -100,7 +100,7 @@ public class IShopBusinessImpl implements IShopBusiness {
 	 * @Override
 	 * @return
 	 */
-	public ArrayList<Article> readAll() {
+	public ArrayList<Article> readCaddy() {
 		caddyToList = caddy.values().stream().collect(Collectors.toCollection(ArrayList::new));     
 		return  caddyToList;
 	}
@@ -153,7 +153,7 @@ public class IShopBusinessImpl implements IShopBusiness {
 	 * @param id
 	 * @return
 	 */
-	public  ArrayList<Article> getArticleByCategory(int id) {
+	public  ArrayList<Article> getArticlesByCategory(int id) {
 		ArrayList<Article> articles = null;
 		if (categoryDao.read(id)!=null) {
 			articles=articleDao.readByCategory(id);
