@@ -10,8 +10,10 @@ import java.util.ArrayList;
  */
 public interface Dao<T> {
 	
-	public Connection connection=ConnectBdd.Connexion().getConnection();
-
+	//public Connection connection=ConnectBdd.Connexion().getConnection();
+	public Connection connection=BddConnection.getConnection();
+	
+	
 	public  void create(T obj);        
 	public  T read(int id);			
 	public  boolean update(T obj);    
