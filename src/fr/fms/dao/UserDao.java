@@ -21,7 +21,7 @@ public class UserDao implements Dao<User> {
 
 
 	@Override
-	public void create(User obj) {
+	public boolean create(User obj) {
 		String strSql="INSERT INTO T_Users(Login, Password) VALUES(?, ?);";	
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setString(1, obj.getLogin());
@@ -29,11 +29,13 @@ public class UserDao implements Dao<User> {
 			
 			if (ps.executeUpdate()==1) {
 				System.out.println("insertion ok");
+				return true;
 			}
 
 		} catch (SQLException e) {
 			System.out.println("creation : Erreur ");
 		}
+		return false;
 		
 	}
 

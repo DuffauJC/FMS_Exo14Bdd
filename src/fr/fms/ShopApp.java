@@ -1,6 +1,7 @@
 package fr.fms;
 
 import java.util.ArrayList;
+
 import java.util.Scanner;
 
 import fr.fms.business.IShopBusinessImpl;
@@ -10,7 +11,7 @@ import fr.fms.entities.User;
 
 public class ShopApp {
 
-
+	private static Scanner scan = new Scanner(System.in); 
 	private static IShopBusinessImpl shopJob;	
 	private static String login = "";
 	private static String password = "";
@@ -27,11 +28,11 @@ public class ShopApp {
 
 		welcome();
 
-		Scanner scan = new Scanner(System.in); 
-
 		while (true) {
+		
+		
 			showMenu();
-			mainFunction(scan);
+			mainFunction();
 
 		}
 
@@ -54,7 +55,7 @@ public class ShopApp {
 
 		// list of article categories
 		ArrayList<Category>cat=	shopJob.getListCategory();
-	
+
 		System.out.println("List of catégories.\n");
 		System.out.println("-------------------------------------------------------------------------------------------------------");
 		System.out.printf("| %-15s | %-14s | %-65s |%n", "REF", "NOM", "DESCRIPTION");
@@ -80,7 +81,7 @@ public class ShopApp {
 	 * @param user
 	 * @param scan
 	 */
-	public static void mainFunction(Scanner scan) {
+	public static void mainFunction() {
 
 		int action=0;
 		int index;
@@ -102,7 +103,7 @@ public class ShopApp {
 						scan.next();
 					}
 					index =scan.nextInt();
-					
+
 					// list of articles of the chosen category
 					showChoosenCategory(index);
 					System.out.println("Type the reference to add.");
@@ -126,20 +127,22 @@ public class ShopApp {
 					break;
 
 				case 3 : // update caddy
-					displayCaddy(scan);
+					displayCaddy();
 
 					break;
 
 				case 4 : // validate basket
 
 					System.out.println("Type your login and password to valid order"); 
+					login=scan.next(); 
+					password=scan.next();
 					//Check if the account exists. 
-					userOk= login(scan,login,password);
-
-					if (userOk!=null) { displayCommand(userOk,scan);
+					userOk= shopJob.login(login,password);
+					
+					if (userOk!=null) { displayCommand(userOk);
 					} else {
 						System.out.println("Non-existent customer."); 
-						}
+					}
 
 					break;
 
@@ -159,10 +162,10 @@ public class ShopApp {
 
 	}
 	private static void showChoosenCategory(int index) {
-		
+
 		ArrayList<Article> art=shopJob.getArticlesByCategory(index);
 		System.out.println("List of articles in the category "+index+" : ");
-	
+
 		System.out.println("----------------------------------------------------------------------------------------------------------");
 		System.out.printf("| %-5s| %-25s | %-38s | %-20s |%-3s |%n", "NO.", "DESCRIPTION", "MARQUE", " PRIX"," QTE");
 		System.out.println("|------|---------------------------|----------------------------------------|----------------------|-----|");
@@ -175,36 +178,18 @@ public class ShopApp {
 
 		System.out.println("----------------------------------------------------------------------------------------------------------");
 		art.clear();
-		
+
 	}
 
-	/**
-	 * login user
-	 * @param scan
-	 * @param login
-	 * @param password
-	 * @return
-	 */
-	public static User login(Scanner scan, String login, String password) {
 
-		User user = null;
-		login=scan.next(); 
-		password=scan.next();
-		for (User u : shopJob.getListUsers()) {
-			if (u.getLogin().equals(login) && u.getPassword().equals(password)) {
-				user=new User(u.getIdUser(),u.getLogin(),u.getPassword());
-			}
-		}
-		return user;
-	}
-	
+
 	/**
 	 * show caddy
 	 */
 	private static void caddy() {
-		
+
 		ArrayList<Article> caddy=shopJob.readCaddy();
-	
+
 		if (caddy.isEmpty()) {
 			System.out.println("---------------------");
 			System.out.println("Votre panier est vide");
@@ -236,13 +221,13 @@ public class ShopApp {
 			System.out.println("---------------------------------------------------------------------------------------------");		
 
 		}
-		
+
 	}
 	/**
 	 * Method that modifies the basket
 	 * @param scan
 	 */
-	public static void displayCaddy(Scanner scan) {
+	public static void displayCaddy() {
 
 		caddy();
 		// caddy not empty, show menu
@@ -297,7 +282,7 @@ public class ShopApp {
 	 * @param userOk 
 	 * @param scan
 	 */
-	public static void displayCommand(User userOk, Scanner scan) {
+	public static void displayCommand(User userOk) {
 
 		if (shopJob.readCaddy().isEmpty()) {
 			System.out.println("---------------------------------------");
@@ -308,11 +293,13 @@ public class ShopApp {
 			// if order we can validate
 			System.out.println("Validate the  command ? Y/N");
 			String rep = scan.next().toUpperCase();
-
-			if (rep.equals("Y")) {
-				shopJob.order();
-				System.out.println("Order validated "+userOk.getLogin());
+			
+			int idOrder=shopJob.order(userOk.getIdUser());
+			if (rep.equals("Y")&& idOrder!=0) {
+				System.out.println("Order validated "+userOk.getLogin()+" numéro de commande : "+idOrder);
+				shopJob.clearCart();
 			} else {
+				System.out.println("problème lors du passsage de commande");
 				System.out.println("Cart still valid");
 
 			}

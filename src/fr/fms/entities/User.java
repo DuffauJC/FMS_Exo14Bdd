@@ -19,6 +19,16 @@ public class User {
 	}
 	/**
 	 * 
+	 * @param idUser
+	 * @param login
+	 */
+	public User(int idUser, String login) {
+		setIdUser(idUser);
+		setLogin(login);
+
+	}
+	/**
+	 * 
 	 * @param login
 	 * @param password
 	 */

@@ -4,6 +4,7 @@
 package fr.fms.business;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,8 @@ import fr.fms.dao.DAOFactory;
 import fr.fms.dao.Dao;
 import fr.fms.entities.Article;
 import fr.fms.entities.Category;
+import fr.fms.entities.Order;
+import fr.fms.entities.OrderItem;
 import fr.fms.entities.User;
 
 /**
@@ -25,13 +28,16 @@ public class IShopBusinessImpl implements IShopBusiness {
 	private static Dao<Article> articleDao;
 	private static Dao<User> userDao;
 	private static Dao<Category> categoryDao;
-
+	private static Dao<Order> orderDao;
+	private static Dao<OrderItem> orderItemDao;
 
 	public IShopBusinessImpl() {
 		caddy = new HashMap<Integer,Article>();	
 		articleDao=DAOFactory.getArticleDao();
 		userDao=DAOFactory.getUserDao();
 		categoryDao=DAOFactory.getCategoryDao();
+		orderDao=DAOFactory.getOrderDao();
+		orderItemDao=DAOFactory.getOrderItemDao();
 	}
 	/**
 	 * add caddy
@@ -90,9 +96,36 @@ public class IShopBusinessImpl implements IShopBusiness {
 	 * clear caddy
 	 * @Override
 	 */
-	public void order() {
-		// faire un new Command() plus tard.
-		caddy.clear();
+	public int order(int idUser) {
+		if(userDao.read(idUser) != null) {
+			double total = getTotal(); 
+			Order order = new Order(total, new Date(), idUser);
+			if(orderDao.create(order)) {	//ajout en base de la commande
+				for(Article article : caddy.values()) {	//ajout des commandes minifiées associées
+					orderItemDao.create(new OrderItem(0, article.getIdArticle(), article.getQty(), article.getUnitaryPrice(), order.getIdOrder()));
+				}
+				return order.getIdOrder();
+			}
+		}
+		
+		return 0;
+	}
+	/**
+	 * login user
+	 * @param login
+	 * @param password
+	 * @return
+	 */
+	public User login(String login, String password) {
+
+		User user = null;
+		
+		for (User u : getListUsers()) {
+			if (u.getLogin().equalsIgnoreCase(login) && u.getPassword().equals(password)) {
+				user=new User(u.getIdUser(),u.getLogin());
+			}
+		}
+		return user;
 	}
 
 	/**
@@ -132,6 +165,23 @@ public class IShopBusinessImpl implements IShopBusiness {
 		ArrayList<Category> categories = categoryDao.readAll();
 		return categories;
 	}
+	/**
+	 * get orders
+	 * @return
+	 */
+	public ArrayList<Order> getListOrder() {
+		ArrayList<Order> orders = orderDao.readAll();
+		return orders;
+	}
+	/**
+	 * renvoi le total de la commande en cours
+	 * @return total
+	 */
+	public double getTotal() {
+		double [] total = {0};
+		caddy.values().forEach((a) -> total[0] += a.getUnitaryPrice() * a.getQty()); 	
+		return total[0];
+	}
 
 	/**
 	 * get article by id
@@ -146,6 +196,9 @@ public class IShopBusinessImpl implements IShopBusiness {
 			throw new RuntimeException("article inexistant dans la liste !");
 		}
 
+	}
+	public void clearCart() {
+		caddy.clear();		
 	}
 
 	/**

@@ -21,7 +21,7 @@ public class ArticleDao implements Dao<Article> {
 
 
 	@Override
-	public void create(Article obj) {
+	public boolean create(Article obj) {
 		String strSql="INSERT INTO T_Articles(Description, Brand, UnitaryPrice) VALUES(?, ?, ?);";	
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setString(1, obj.getDescription());
@@ -30,11 +30,13 @@ public class ArticleDao implements Dao<Article> {
 
 			if (ps.executeUpdate()==1) {
 				System.out.println("insertion ok");
+				return true;
 			}
 		} catch (SQLException e) {
 			System.out.println("creation : Erreur ");
 
 		}
+		return false;
 	}
 
 	@Override

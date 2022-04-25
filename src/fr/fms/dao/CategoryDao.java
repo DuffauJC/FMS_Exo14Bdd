@@ -19,20 +19,21 @@ public class CategoryDao implements Dao<Category> {
 	}
 
 	@Override
-	public void create(Category obj) {
+	public boolean create(Category obj) {
 		String strSql="INSERT INTO T_Categories (CatName,Descriptions) VALUES( ?, ?);";	
 		try(PreparedStatement ps =connection.prepareStatement(strSql)){ 
 			ps.setString(1, obj.getCatName());
 			ps.setString(2, obj.getDescription());
 		
-		
 			if (ps.executeUpdate()==1) {
 				System.out.println("insertion ok");
+				return true;
 			}
 		} catch (SQLException e) {
 			System.out.println("creation : Erreur ");
 			
 		}
+		return false;
 	}
 
 	@Override

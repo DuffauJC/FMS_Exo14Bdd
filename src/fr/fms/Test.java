@@ -2,8 +2,10 @@ package fr.fms;
 
 
 import fr.fms.dao.ArticleDao;
+import fr.fms.dao.OrderDao;
 import fr.fms.dao.UserDao;
 import fr.fms.entities.Article;
+import fr.fms.entities.Order;
 import fr.fms.entities.User;
 
 
@@ -12,6 +14,7 @@ public class Test {
 
 	private static ArticleDao shop;	
 	private static UserDao user;
+	private static OrderDao order;
 	/**
 	 * 
 	 * @param args
@@ -73,11 +76,14 @@ public class Test {
 		System.out.println("-------------------------------------------------------");
 
 		// lecture de la table users
-		System.out.println("Liste des utilisateurs : ");
+		//System.out.println("Liste des utilisateurs : ");
 		//for(User u : user.readAll())
 		//System.out.println(u);
 		System.out.println("-------------------------------------------------------");
-
+		System.out.println("Liste des commandes : ");
+		for (Order ord : order.readAll()) {
+			System.out.println(ord.getIdOrder()+" "+ord.getAmount()+" "+ord.getDate()+" "+ord.getIdUser());	
+		}
 
 	}
 	/**
@@ -87,6 +93,7 @@ public class Test {
 		// TODO Auto-generated method stub
 		shop = new ArticleDao();
 		user=new UserDao();
+		order=new OrderDao();
 	}
 
 
